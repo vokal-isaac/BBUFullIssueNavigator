@@ -55,7 +55,15 @@ static BBUFullIssueNavigator *sharedPlugin;
             [info.originalInvocation getReturnValue:&height];
             
             if ([item subtitle]) {
-                height += [[item subtitle] boundingRectWithSize:NSMakeSize([(NSObject*)info.instance width], INT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{ NSFontAttributeName: [NSFont fontWithName:@"LucidaGrande" size:11.0] }].size.height;
+                NSDictionary *attributes = @{ NSFontAttributeName: [NSFont fontWithName:@"LucidaGrande" size:11.0], };
+                NSSize boundingSize = NSMakeSize([(NSObject*)info.instance width], CGFLOAT_MAX);
+                NSRect singleLineBoundingRect = [@"One Line" boundingRectWithSize:boundingSize
+                                                                          options:NSStringDrawingUsesLineFragmentOrigin
+                                                                       attributes:attributes];
+                NSRect fullSubtitleBoundingRect = [[item subtitle] boundingRectWithSize:boundingSize
+                                                                                options:NSStringDrawingUsesLineFragmentOrigin
+                                                                             attributes:attributes];
+                height += NSHeight(fullSubtitleBoundingRect) - NSHeight(singleLineBoundingRect);
             }
             
             [info.originalInvocation setReturnValue:&height];
